@@ -32,7 +32,7 @@ const backgroundWords = [
   { word: 'நேற்று', x: '35%', y: '8%', size: '16px', opacity: 0.06, rot: '25deg' },
   { word: 'യാദें', x: '55%', y: '18%', size: '23px', opacity: 0.07, rot: '-8deg' },
   { word: 'life', x: '45%', y: '30%', size: '25px', opacity: 0.05, rot: '12deg' },
-  { word: 'ප್ರೀತಿ', x: '65%', y: '42%', size: '14px', opacity: 0.08, rot: '-22deg' },
+  { word: 'පීරිති', x: '65%', y: '42%', size: '14px', opacity: 0.08, rot: '-22deg' },
   { word: 'ഇന്ന്', x: '30%', y: '52%', size: '20px', opacity: 0.04, rot: '18deg' },
   { word: 'আজ', x: '50%', y: '68%', size: '22px', opacity: 0.09, rot: '-10deg' },
   { word: 'yesterday', x: '40%', y: '82%', size: '17px', opacity: 0.05, rot: '20deg' },
@@ -76,6 +76,10 @@ export default function LoginPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  // Password visibility toggles
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleTabSwitch = (tab: 'login' | 'signup') => {
     setActiveTab(tab);
@@ -245,13 +249,33 @@ export default function LoginPage() {
 
             <div className="form-group">
               <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="input"
-                placeholder="Enter your password"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showLoginPassword ? 'text' : 'password'}
+                  className="input"
+                  placeholder="Enter your password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowLoginPassword((s) => !s)}
+                  aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
+                >
+                  {showLoginPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3-11-7 1.03-2.24 2.79-4.07 4.9-5.16" />
+                      <path d="M1 1l22 22" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
               <div style={{ textAlign: 'right', marginTop: '4px' }}>
                 <Link href="/forgot-password" style={{ fontSize: '13px', color: 'var(--accent)', textDecoration: 'none' }}>
                   Forgot password?
@@ -265,7 +289,7 @@ export default function LoginPage() {
               style={{ width: '100%', marginTop: '8px', padding: '13px', fontSize: '15px' }}
               disabled={loading}
             >
-              {loading ? <span className="spinner" /> : loading ? 'Logging in...' : 'Login →'}
+              {loading ? <span className="spinner" /> : 'Login →'}
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'var(--text-secondary)' }}>
@@ -293,14 +317,34 @@ export default function LoginPage() {
 
             <div className="form-group">
               <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="input"
-                placeholder="Create a strong password"
-                value={signupPassword}
-                onChange={(e) => setSignupPassword(e.target.value)}
-              />
-              
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showSignupPassword ? 'text' : 'password'}
+                  className="input"
+                  placeholder="Create a strong password"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignupPassword((s) => !s)}
+                  aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
+                >
+                  {showSignupPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3-11-7 1.03-2.24 2.79-4.07 4.9-5.16" />
+                      <path d="M1 1l22 22" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+
               {/* Password Strength Meter */}
               <div>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
@@ -329,13 +373,33 @@ export default function LoginPage() {
 
             <div className="form-group">
               <label className="form-label">Confirm Password</label>
-              <input
-                type="password"
-                className="input"
-                placeholder="Repeat your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  className="input"
+                  placeholder="Repeat your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((s) => !s)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
+                >
+                  {showConfirmPassword ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3-11-7 1.03-2.24 2.79-4.07 4.9-5.16" />
+                      <path d="M1 1l22 22" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {confirmPassword.length > 0 && (
                 <div style={{ fontSize: '12px', marginTop: '4px', color: signupPassword === confirmPassword ? 'var(--success)' : 'var(--error)' }}>
                   {signupPassword === confirmPassword ? '✓ Passwords match' : '✗ Passwords don\'t match'}
@@ -349,7 +413,7 @@ export default function LoginPage() {
               style={{ width: '100%', marginTop: '16px', padding: '13px', fontSize: '15px' }}
               disabled={loading}
             >
-              {loading ? <span className="spinner" /> : loading ? 'Creating account...' : 'Create Account →'}
+              {loading ? <span className="spinner" /> : 'Create Account →'}
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'var(--text-secondary)' }}>

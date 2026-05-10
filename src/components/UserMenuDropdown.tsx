@@ -141,7 +141,7 @@ export default function UserMenuDropdown({ userName }: UserMenuDropdownProps) {
   };
 
   return (
-    <div className="z-50" style={{ position: 'fixed', left: '12px', top: '9px' }}>
+    <div className="z-50" style={{ position: 'fixed', left: '12px', top: '9px', zIndex: 9999 }}>
       <button
         ref={avatarRef}
         type="button"

@@ -31,6 +31,16 @@ const formatDateYYYYMMDD = (date: Date): string => {
   return `${y}-${m}-${d}`;
 };
 
+// ISO week number helper (Monday as first day of week)
+function getISOWeek(date: Date): number {
+  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = tmp.getUTCDay() || 7; // Monday=1, Sunday=7
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((tmp.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return weekNo;
+}
+
 const getDayNumber = (dateStr: string): number => {
   // Safely extract day without timezone shifting risks
   return parseInt(dateStr.split('-')[2], 10);
@@ -118,21 +128,10 @@ export default function WeekPage() {
   return (
     <div className="min-h-screen bg-[#fdfaf6] px-6 py-6 md:py-10 md:px-8 font-sans text-gray-900">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-6 flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => router.push('/journal')}
-            className="flex items-center gap-1.5 border-0 bg-transparent px-0 py-2 text-[13px] text-[#8B7355] transition-colors hover:text-[#C4922A] [font-family:'Lora',serif]"
-          >
-            <ChevronLeft size={16} strokeWidth={1.8} />
-            <span>Back to Diary</span>
-          </button>
-
-          <UserMenuDropdown userName={userName} />
-        </div>
+        <UserMenuDropdown userName={userName} />
 
         {/* Header Navigation */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-end mt-4 mb-8">
           <button 
             onClick={handlePrevWeek}
             className="p-2 text-gray-400 hover:text-orange-500 bg-white rounded-full shadow-sm border border-gray-100 transition-colors"
@@ -144,7 +143,7 @@ export default function WeekPage() {
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Your Week</h1>
             <p className="text-sm font-medium text-gray-500 mt-1 uppercase tracking-wide">
-              {formatDateYYYYMMDD(selectedWeekStart)}
+              Week {getISOWeek(selectedWeekStart)}
             </p>
           </div>
 

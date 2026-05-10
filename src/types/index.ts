@@ -115,6 +115,19 @@ export interface WeekActivitiesResponse {
   days: DayEntryResponse[];
 }
 
+export interface SttTranscriptResponse {
+  transcript: string;
+  languageCode: string;
+}
+
+export type SttLanguageCode = 'ta-IN' | 'hi-IN' | 'en-IN';
+
+export interface SttLanguageOption {
+  code: SttLanguageCode;
+  label: string;
+  nativeLabel: string;
+}
+
 // API Response wrapper
 export interface ApiResponse<T> {
   success: boolean;
