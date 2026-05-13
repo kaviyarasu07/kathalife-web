@@ -40,7 +40,7 @@ function getTodayValue(): string {
   return `${year}-${month}-${day}`;
 }
 
-function MenuSvg({ icon, stroke = '#5C3D2E' }: { icon: MenuIcon; stroke?: string }) {
+function MenuSvg({ icon, stroke = 'var(--purple-glow)' }: { icon: MenuIcon; stroke?: string }) {
   return (
     <svg
       width="15"
@@ -148,7 +148,7 @@ export default function UserMenuDropdown({ userName }: UserMenuDropdownProps) {
         aria-label="Open user menu"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((open) => !open)}
-        className="flex h-[42px] w-[42px] items-center justify-center rounded-full border-2 border-[#C8860A] bg-[#5C3D2E] text-sm font-medium text-[#FDFAF5] shadow-[0_4px_16px_rgba(92,61,46,0.18)] transition-all duration-200 hover:scale-105 hover:ring-2 hover:ring-[#C8860A]/20 [font-family:'Lora',serif]"
+        className="flex h-[42px] w-[42px] items-center justify-center rounded-full border-2 border-[var(--purple-brand)] bg-[var(--bg-elevated)] text-sm font-semibold text-[var(--text-primary)] shadow-[var(--shadow-glow)] transition-all duration-200 hover:scale-105 hover:ring-2 hover:ring-[var(--purple-brand)]/30 [font-family:var(--font-display)]"
       >
         {!mounted ? (
           <div style={{ width: '42px', height: '42px' }} />
@@ -160,39 +160,39 @@ export default function UserMenuDropdown({ userName }: UserMenuDropdownProps) {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="journal-user-dropdown w-[240px] overflow-hidden border border-[#ddd0b3] bg-[#FDFAF5] shadow-[0_8px_32px_rgba(92,61,46,0.13)]"
+          className="journal-user-dropdown w-[240px] overflow-hidden border border-[var(--bg-border)] bg-[var(--bg-elevated)] shadow-[var(--shadow-card)]"
           style={{
             position: 'absolute',
             left: '0',
             top: '60px',
-            borderRadius: '14px',
+            borderRadius: 'var(--radius-md)',
           }}
         >
           <div
-            className="flex items-center gap-3 border-b border-[#e8dfc8] px-4 pb-3 pt-[14px]"
-            style={{ background: 'linear-gradient(135deg, #f5ede0 0%, #FDFAF5 100%)' }}
+            className="flex items-center gap-3 border-b border-[var(--bg-border)] px-4 pb-3 pt-[14px]"
+            style={{ background: 'linear-gradient(135deg, var(--purple-soft) 0%, var(--bg-elevated) 100%)' }}
           >
-            <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full border-2 border-[#C8860A] bg-[#5C3D2E] text-xs font-medium text-[#FDFAF5] shadow-[0_4px_12px_rgba(92,61,46,0.16)] [font-family:'Lora',serif]">
+            <div className="flex h-[38px] w-[38px] flex-none items-center justify-center rounded-full border-2 border-[var(--purple-brand)] bg-[var(--bg-surface)] text-xs font-semibold text-[var(--text-primary)] shadow-[var(--shadow-glow)] [font-family:var(--font-display)]">
               {mounted ? initials : <div style={{ width: '38px', height: '38px' }} />}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-medium leading-5 text-[#3a2216] [font-family:'Lora',serif]">
+              <p className="truncate text-[13px] font-semibold leading-5 text-[var(--text-primary)] [font-family:var(--font-body)]">
                 {displayName}
               </p>
-              <p className="truncate text-[11px] leading-4 text-[#8a6a55] [font-family:'Lora',serif]">
+              <p className="truncate text-[11px] leading-4 text-[var(--text-secondary)] [font-family:var(--font-journal)]">
                 {displayEmail || 'KathaLife diary'}
               </p>
             </div>
           </div>
 
-          <p className="px-4 pb-1 pt-2.5 text-[10px] uppercase tracking-[1.2px] text-[#b09070] [font-family:'Lora',serif]">
+          <p className="px-4 pb-1 pt-2.5 text-[10px] uppercase tracking-[1.2px] text-[var(--text-muted)] [font-family:var(--font-body)]">
             Your diary
           </p>
 
           <div className="px-4 pb-2 pt-1">
             <label
               htmlFor="journal-go-to-date"
-              className="mb-1.5 flex items-center gap-[10px] text-[13.5px] text-[#5C3D2E] [font-family:'Lora',serif]"
+              className="mb-1.5 flex items-center gap-[10px] text-[13.5px] text-[var(--text-secondary)] [font-family:var(--font-body)]"
             >
               <MenuSvg icon="week" />
               <span>Go to date</span>
@@ -202,11 +202,11 @@ export default function UserMenuDropdown({ userName }: UserMenuDropdownProps) {
               type="date"
               value={selectedDate}
               onChange={(event) => handleDateChange(event.target.value)}
-              className="h-9 w-full rounded-lg border border-[#ddd0b3] bg-[#fffaf2] px-3 text-[13px] text-[#5C3D2E] outline-none transition-colors duration-[120ms] focus:border-[#C8860A] [font-family:'Lora',serif]"
+              className="h-9 w-full rounded-[var(--radius-sm)] border border-[var(--bg-border)] bg-[var(--bg-surface)] px-3 text-[13px] text-[var(--text-primary)] outline-none transition-colors duration-[120ms] focus:border-[var(--purple-brand)] [font-family:var(--font-body)]"
             />
           </div>
 
-          <div className="my-1 h-px bg-[#e8dfc8]" />
+          <div className="my-1 h-px bg-[var(--bg-border)]" />
 
           <div>
             {menuItems.map((item) => (
@@ -220,24 +220,24 @@ export default function UserMenuDropdown({ userName }: UserMenuDropdownProps) {
                     navigateTo(item.route);
                   }
                 }}
-                className="group flex cursor-pointer items-center gap-[10px] border-l-[2.5px] border-l-transparent px-4 py-[9px] transition-[background,border-left-color] duration-[120ms] hover:border-l-[#C8860A] hover:bg-[#f5ede0]"
+                className="group flex cursor-pointer items-center gap-[10px] border-l-[2.5px] border-l-transparent px-4 py-[9px] transition-[background,border-left-color] duration-[120ms] hover:border-l-[var(--purple-brand)] hover:bg-[var(--purple-soft)]"
               >
                 <MenuSvg icon={item.icon} />
-                <span className="text-[13.5px] text-[#5C3D2E] [font-family:'Lora',serif]">
+                <span className="text-[13.5px] text-[var(--text-primary)] [font-family:var(--font-body)]">
                   {item.label}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="my-1 h-px bg-[#e8dfc8]" />
+          <div className="my-1 h-px bg-[var(--bg-border)]" />
 
           <button
             type="button"
             onClick={handleSignOut}
-            className="flex w-full items-center gap-[10px] border-0 bg-transparent px-4 py-[9px] text-left text-[13.5px] text-[#b04040] transition-colors duration-[120ms] hover:bg-[#fdf0f0] [font-family:'Lora',serif]"
+            className="flex w-full items-center gap-[10px] border-0 bg-transparent px-4 py-[9px] text-left text-[13.5px] text-[var(--accent-rose)] transition-colors duration-[120ms] hover:bg-[rgba(232,111,138,0.12)] [font-family:var(--font-body)]"
           >
-            <MenuSvg icon="logout" stroke="#b04040" />
+            <MenuSvg icon="logout" stroke="var(--accent-rose)" />
             <span>Sign Out</span>
           </button>
         </div>

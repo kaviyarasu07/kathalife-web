@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Patrick_Hand } from "next/font/google";
+import { DM_Sans, Geist_Mono, Lora, Patrick_Hand, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '@/context/AuthContext';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
 });
 
@@ -16,6 +16,16 @@ const geistMono = Geist_Mono({
 const patrickHand = Patrick_Hand({
   weight: "400",
   variable: "--font-patrick-hand",
+  subsets: ["latin"],
+});
+
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair-display",
+  subsets: ["latin"],
+});
+
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
 });
 
@@ -32,7 +42,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${patrickHand.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${geistMono.variable} ${patrickHand.variable} ${playfairDisplay.variable} ${lora.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>

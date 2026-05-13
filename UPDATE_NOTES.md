@@ -1,5 +1,82 @@
 # Update Notes
 
+## Feature: Dark Theme Login & Signup Redesign
+
+**Route:** `/src/app/(auth)/login/page.tsx`
+
+### Follow-up Corrections
+
+1. **Login Link & Back Button Cleanup**
+   * Removed the hero back button from the login/signup screen.
+   * Forced the login screen `Forgot password?` link to white across normal, hover, active, and visited states so browser default blue styling cannot leak through.
+
+2. **Forgot Password Screen Redesign**
+   * Removed the old back button from the forgot password screen.
+   * Rebuilt the forgot password page with the same dark mobile-first shell as login and added a recovery-themed inline mock illustration showing a secure email/password reset.
+   * Kept the existing OTP, resend cooldown, password validation, reset flow, and routing behavior intact.
+
+3. **Verification**
+   * `npx tsc --noEmit` passes.
+   * `npm run lint -- "src/app/(auth)/login/page.tsx" "src/app/(auth)/forgot-password/page.tsx"` passes.
+
+### Previous Corrections
+
+1. **Single-Screen Fit**
+   * Changed the auth page and shell from minimum-height sizing to fixed `100svh` sizing with hidden overflow.
+   * Reduced hero height, illustration size, card padding, field height, and button height on compact browser heights so the login view fits within one viewport without page scrolling.
+
+2. **Input Autofill Color Fix**
+   * Added WebKit autofill overrides so saved email/password values remain on the dark input background with white text instead of Chrome/Edge painting them white.
+
+3. **Contrast Improvements**
+   * Changed the KathaLife heading accent, social icon accent, forgot password link, legal links, and bottom action link to white for clearer visibility on the dark card.
+
+4. **Verification**
+   * `npx tsc --noEmit` passes.
+   * `npm run lint -- "src/app/(auth)/login/page.tsx"` passes.
+
+### Key Architectural Decisions & Fixes
+
+1. **Logic Preservation**
+   * Preserved the existing `authService.login`, `authService.signup`, `AuthContext.login`, form state, password visibility state, validation branches, error handling, and post-auth routing.
+   * Kept the existing signup requirement for password confirmation so the current validation behavior remains intact.
+
+2. **Mobile-First Auth Layout**
+   * Rebuilt the page into a centered max-width `480px` shell with a `40svh` illustration hero and `60svh` rounded form card.
+   * Added the requested dark radial hero background, decorative sparkle marks, back button, and inline purple writing illustration.
+
+3. **Dark Form System**
+   * Restyled login and signup with dark elevated inputs, Lucide field icons, password reveal toggles, social auth button row, divider text, pill CTA, legal copy, and variant-specific bottom links.
+   * Added token-matched focus and error states, including rose borders and inline `AlertCircle` field errors.
+
+4. **Verification**
+   * `npx tsc --noEmit` passes.
+   * `npm run lint -- "src/app/(auth)/login/page.tsx"` passes.
+   * `npm run build` passes with elevated permission to update `.next` artifacts.
+
+## Feature: KathaLife Dark Theme Design Tokens
+
+**Routes/Files:** `/src/app/globals.css`, `/src/app/layout.tsx`, `/src/components/UserMenuDropdown.tsx`, `/tailwind.config.ts`
+
+### Key Architectural Decisions & Fixes
+
+1. **Global Token System**
+   * Added the KathaLife dark theme variables for background layers, purple brand scale, text colors, accents, radius, shadows, and mobile bottom navigation height.
+   * Kept legacy aliases such as `--bg-app`, `--primary`, `--accent`, and `--border` mapped to the new dark theme tokens so existing screens can migrate gradually.
+
+2. **Font Token Wiring**
+   * Loaded `DM Sans`, `Playfair Display`, and `Lora` through `next/font/google`.
+   * Added CSS font tokens (`--font-body`, `--font-display`, `--font-journal`) and matching Tailwind font-family aliases.
+
+3. **User Menu Dark Theme Migration**
+   * Updated `UserMenuDropdown` from the old warm brown palette to the new dark purple surface, border, glow, and text tokens.
+   * Replaced hard-coded menu danger styling with the new `--accent-rose` token.
+
+4. **Verification**
+   * `npx tsc --noEmit` passes.
+   * `npm run build` passed once with elevated permission; later sandboxed reruns were blocked by `.next` file permissions.
+   * `npm run lint` is still blocked by pre-existing unrelated lint issues in auth, services, and landing page files.
+
 ## Feature: Bio Profile Page Implementation
 
 **Route:** `/src/app/(protected)/bio/page.tsx`

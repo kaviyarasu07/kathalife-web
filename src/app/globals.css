@@ -4,32 +4,69 @@
 
 :root {
   /* Warm Ink Theme — replaces Soft Dawn */
-  --bg-app: #FDFAF5;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #F5F0E8;
-  --bg-dark: #1A1208;
+}
 
-  --primary: #5C3D2E;
-  --primary-dark: #3D2519;
-  --primary-light: #8B6354;
+:root {
+  /* KathaLife Dark Theme */
+  --bg-base: #0D0B1A;
+  --bg-surface: #13102A;
+  --bg-elevated: #1C1836;
+  --bg-border: #2A2550;
 
-  --accent: #E07B39;
-  --accent-dark: #C4621E;
-  --accent-soft: #FEF3E2;
+  --purple-dim: #3D3580;
+  --purple-mid: #5B4FD4;
+  --purple-brand: #7C6FE8;
+  --purple-glow: #A89CF5;
+  --purple-soft: rgba(124,111,232,0.15);
 
-  --text-primary: #1A1208;
-  --text-secondary: #5C4A35;
-  --text-muted: #9C8B7A;
+  --text-primary: #EEEAF8;
+  --text-secondary: #9B93C4;
+  --text-muted: #5A5480;
 
-  --border: #E8DDD0;
-  --border-focus: #E07B39;
+  --accent-teal: #4DC8C8;
+  --accent-amber: #F5A623;
+  --accent-rose: #E86F8A;
+  --accent-green: #5EC87A;
 
-  --success: #2D6A4F;
-  --error: #C0392B;
+  --font-display: var(--font-playfair-display), Georgia, serif;
+  --font-body: var(--font-dm-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-journal: var(--font-lora), Georgia, serif;
 
-  --shadow-sm: 0 1px 3px rgba(26,18,8,0.08);
-  --shadow-md: 0 4px 16px rgba(26,18,8,0.10);
-  --shadow-lg: 0 8px 32px rgba(26,18,8,0.12);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 24px rgba(124,111,232,0.3);
+
+  --bottom-nav-height: 72px;
+
+  /* Legacy aliases retained for existing screens while the app migrates. */
+  --bg-app: var(--bg-base);
+  --bg-card: var(--bg-surface);
+  --bg-subtle: var(--bg-elevated);
+  --bg-dark: #070613;
+  --bg-input: var(--bg-elevated);
+
+  --primary: var(--purple-brand);
+  --primary-dark: var(--purple-mid);
+  --primary-light: var(--purple-glow);
+  --primary-soft: var(--purple-soft);
+
+  --accent: var(--purple-brand);
+  --accent-dark: var(--purple-mid);
+  --accent-soft: var(--purple-soft);
+
+  --border: var(--bg-border);
+  --border-focus: var(--purple-brand);
+
+  --success: var(--accent-green);
+  --error: var(--accent-rose);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.28);
+  --shadow-md: var(--shadow-card);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.45);
 }
 
 * {
@@ -45,7 +82,7 @@ html {
 body {
   background-color: var(--bg-app);
   color: var(--text-primary);
-  font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -189,7 +226,7 @@ body {
 }
 .input:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(224,123,57,0.12);
+  box-shadow: 0 0 0 3px var(--purple-soft);
 }
 .input::placeholder { color: var(--text-muted); }
 
@@ -211,8 +248,8 @@ select.input {
 /* ── Feedback messages ── */
 
 .error-message {
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
+  background: rgba(232,111,138,0.12);
+  border: 1px solid rgba(232,111,138,0.3);
   color: var(--error);
   padding: 10px 14px;
   border-radius: 8px;
@@ -221,8 +258,8 @@ select.input {
 }
 
 .success-message {
-  background: #F0FDF4;
-  border: 1px solid #BBF7D0;
+  background: rgba(94,200,122,0.12);
+  border: 1px solid rgba(94,200,122,0.3);
   color: var(--success);
   padding: 10px 14px;
   border-radius: 8px;
@@ -287,7 +324,7 @@ select.input {
   border: none;
   outline: none;
   resize: none;
-  font-family: 'Patrick Hand', cursive;
+  font-family: var(--font-journal);
   font-size: 18px;
   line-height: 32px;
   color: var(--text-primary);

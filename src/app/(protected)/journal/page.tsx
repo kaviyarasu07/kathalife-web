@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useMemo, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import UserMenuDropdown from '@/components/UserMenuDropdown';
 import { useAuth } from '@/context/AuthContext';
 import { useSttRecorder } from '@/hooks/useSttRecorder';
 import { journalService, type JournalEntry } from '@/services/journalService';
@@ -269,6 +268,8 @@ export function JournalPageContent() {
   const [showWelcome, setShowWelcome] = useState(false);
 
   const [selectedLanguage, setSelectedLanguage] = useState<SttLanguageCode>('ta-IN');
+  const [activeTab, setActiveTab] = useState<'write' | 'speak' | 'quick'>('write');
+  const [selectedMood, setSelectedMood] = useState<string>('');
   const { recordingState, errorMessage, toggleRecording, onTranscript } = useSttRecorder();
   // textarea ref for autosizing to avoid inner scrollbar
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -454,159 +455,319 @@ export function JournalPageContent() {
         style={{
           height: '100dvh',
           width: '100%',
-          background: '#FDFAF5',
+          background: '#0D0B1A',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
+          overflowX: 'hidden',
         }}
       >
-      {/* Header */}
-      <header style={{ position: 'relative', width: '100%', padding: '12px 20px', borderBottom: '1px solid #e8dfc8', background: '#FDFAF5' }}>
-        <UserMenuDropdown userName={userName ?? ''} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-playfair-display), Georgia, serif', color: '#C8860A', fontStyle: 'italic', fontSize: 18 }}>
-            {`Day ${dayNumber}, ${dayName}, ${getLongDate(currentDate)}`}
+        {/* HEADER - sticky */}
+        <header style={{ position: 'sticky', top: 0, zIndex: 50, background: '#0D0B1A', padding: '16px 20px', borderBottom: '1px solid #2A2550', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+           {/* Left: back */}
+           <button onClick={() => router.back()} aria-label="Back" style={{ background: 'transparent', border: 0, padding: 6 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="#9B93C4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {/* Center: Day and Date */}
+          <div style={{ textAlign: 'center', lineHeight: 1 }}>
+            <div style={{ fontFamily: "var(--font-playfair-display), Georgia, serif", fontSize: 18, fontWeight: 600, color: '#EEEAF8' }}>{`Day ${dayNumber}`}</div>
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 13, color: '#9B93C4' }}>{`${dayName}, ${new Date(currentDate).toLocaleString('en-GB', { month: 'short', day: 'numeric' })}`}</div>
           </div>
 
-          <div style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)' }}>
-            <SaveButton status={storyLocked ? 'idle' : saveStatus} onSave={saveEntry} />
-          </div>
-        </div>
-      </header>
-
-      {/* Diary writing area */}
-      <div style={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-        {loading && (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
-            <div style={{ width: 40, height: 40, border: '4px solid #fcd34d', borderTopColor: '#92400e', borderRadius: '50%', animation: 'kathaSpin 0.8s linear infinite' }} />
-          </div>
-        )}
-
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          <textarea
-            ref={textareaRef}
-            value={content}
-            onChange={handleContentChange}
-            readOnly={storyLocked}
-            placeholder=""
-            style={{
-              boxSizing: 'border-box',
-              width: '100%',
-              minHeight: '100%',
-              padding: '16px 24px',
-              border: 'none',
-              outline: 'none',
-              resize: 'none',
-              background: 'transparent',
-              fontFamily: 'var(--font-patrick-hand), Patrick Hand, cursive',
-              fontSize: 18,
-              lineHeight: '32px',
-              color: '#5C3D2E',
-              caretColor: '#C8860A',
-              whiteSpace: 'pre-wrap',
-              overflowY: 'hidden',
-            }}
-          />
-        </div>
-
-        {/* Hint bar */}
-        <div style={{
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 8,
-          padding: '8px 14px',
-          background: recordingState === 'recording' ? '#fff8ed' : '#fef9f0',
-          borderTop: '1px solid #e8dfc8',
-        }}>
-          {/* Left side — status text */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#92400e', fontSize: 12 }}>
-            {recordingState === 'idle' && (
-              <>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#92400e" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 1a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                  <path d="M19 11v1a7 7 0 0 1-14 0v-1" />
-                </svg>
-                <span>Tap mic to speak your thoughts</span>
-              </>
-            )}
-            {recordingState === 'recording' && (
-              <>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#DC2626', display: 'inline-block', boxShadow: '0 0 0 6px rgba(220,38,38,0.12)', animation: 'kathaPulseRing 1.2s ease-out infinite' }} />
-                <span>Listening... speak naturally</span>
-              </>
-            )}
-            {recordingState === 'processing' && (
-              <>
-                <span style={{ width: 10, height: 10, border: '1.5px solid #fcd34d', borderTopColor: '#92400e', borderRadius: '50%', display: 'inline-block', animation: 'kathaSpin 0.8s linear infinite' }} />
-                <span>Transcribing...</span>
-              </>
-            )}
-            {recordingState === 'error' && (
-              <span style={{ color: '#DC2626' }}>{errorMessage ?? 'Something went wrong.'}</span>
-            )}
-          </div>
-
-          {/* Right side — language selector + mic button */}
+          {/* Right: Save button + calendar (calendar preserves existing date picker behaviour) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Language selector — only shown when idle */}
-            {recordingState === 'idle' && (
-              <select
-                value={selectedLanguage}
-                onChange={e => setSelectedLanguage(e.target.value as SttLanguageCode)}
+            <div style={{ position: 'relative' }}>
+              <SaveButton status={storyLocked ? 'idle' : saveStatus} onSave={saveEntry} />
+            </div>
+            <div>
+              <button
+                aria-label="Pick date"
+                onClick={() => {
+                  // create invisible date input to preserve existing calendar behaviour
+                  const input = document.createElement('input');
+                  input.type = 'date';
+                  input.value = formatYYYYMMDD(currentDate);
+                  input.style.position = 'fixed';
+                  input.style.left = '-9999px';
+                  document.body.appendChild(input);
+                  input.addEventListener('change', () => {
+                    const val = input.value; // YYYY-MM-DD
+                    if (val) {
+                      // navigate to journal with date param (existing logic uses searchParams)
+                      router.push(`/journal?date=${val}`);
+                    }
+                    document.body.removeChild(input);
+                  });
+                  input.click();
+                }}
+                style={{ background: 'transparent', border: 0, padding: 6 }}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="5" width="18" height="16" rx="2" stroke="#9B93C4" strokeWidth="1.5" />
+                  <path d="M16 3V7" stroke="#9B93C4" strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M8 3V7" stroke="#9B93C4" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* INPUT MODE SELECTOR */}
+        <div style={{ padding: '20px 20px 0', marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {(['write', 'speak', 'quick'] as const).map((mode) => {
+              const active = mode === (typeof window !== 'undefined' && (window as any).__journal_active_tab ? (window as any).__journal_active_tab : 'write') ? true : mode === (typeof window !== 'undefined' && (window as any).__journal_active_tab ? (window as any).__journal_active_tab : 'write');
+              // Use component-local state instead of window fallback
+              return null;
+            })}
+
+            {/* We use local state for activeTab */}
+            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+              <button
+                onClick={() => { (window as any).__journal_active_tab = 'write'; /* preserve for debugging */ setTimeout(() => {}, 0); }}
+                className=""
                 style={{
-                  fontSize: 11,
-                  padding: '3px 6px',
-                  borderRadius: 12,
-                  border: '0.5px solid #e0d5c0',
-                  background: '#f5f0e8',
-                  color: '#5C3D2E',
-                  fontFamily: 'var(--font-patrick-hand), cursive',
-                  cursor: 'pointer',
-                  outline: 'none',
+                  flex: 1,
+                  padding: 10,
+                  borderRadius: 9999,
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 14,
+                  textAlign: 'center',
+                  background: activeTab === 'write' ? '#7C6FE8' : 'transparent',
+                  color: activeTab === 'write' ? '#fff' : '#5A5480',
+                  border: `1px solid ${activeTab === 'write' ? '#7C6FE8' : '#2A2550'}`,
+                }}
+                onMouseDown={(e) => e.preventDefault()}
+                onClickCapture={() => setActiveTab('write')}
+              >
+                ✏ Write
+              </button>
+
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => setActiveTab('speak')}
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  borderRadius: 9999,
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 14,
+                  textAlign: 'center',
+                  background: activeTab === 'speak' ? '#7C6FE8' : 'transparent',
+                  color: activeTab === 'speak' ? '#fff' : '#5A5480',
+                  border: `1px solid ${activeTab === 'speak' ? '#7C6FE8' : '#2A2550'}`,
                 }}
               >
-                <option value="ta-IN">தமிழ்</option>
-                <option value="hi-IN">हिन्दी</option>
-                <option value="en-IN">English</option>
-              </select>
+                🎤 Speak
+              </button>
+
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => setActiveTab('quick')}
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  borderRadius: 9999,
+                  fontFamily: 'var(--font-dm-sans)',
+                  fontSize: 14,
+                  textAlign: 'center',
+                  background: activeTab === 'quick' ? '#7C6FE8' : 'transparent',
+                  color: activeTab === 'quick' ? '#fff' : '#5A5480',
+                  border: `1px solid ${activeTab === 'quick' ? '#7C6FE8' : '#2A2550'}`,
+                }}
+              >
+                ⚡ Quick Note
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Writing container */}
+        <div style={{ padding: '0 20px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ background: '#13102A', border: '1px solid #2A2550', borderRadius: 16, padding: 20, minHeight: 300, marginBottom: 16, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+            {/* LOCKED OVERLAY */}
+            {storyLocked && (
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(13,11,26,0.85)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 10 }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="11" width="18" height="10" rx="2" stroke="#5A5480" strokeWidth="1.5" />
+                  <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="#5A5480" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 14, color: '#5A5480' }}>This day is locked</div>
+              </div>
             )}
 
-            {/* Mic button */}
+            {/* WRITE MODE */}
+            {activeTab === 'write' && (
+              <>
+                <textarea
+                  ref={textareaRef}
+                  value={content}
+                  onChange={handleContentChange}
+                  readOnly={storyLocked}
+                  placeholder="What's on your mind?"
+                  maxLength={1000}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    color: '#EEEAF8',
+                    fontFamily: "Lora, 'Lora', serif",
+                    fontSize: 16,
+                    lineHeight: '1.8',
+                    width: '100%',
+                    resize: 'none',
+                    minHeight: 160,
+                    overflow: 'hidden',
+                  }}
+                />
+
+                {/* maxlength indicator */}
+                <div style={{ position: 'absolute', right: 16, bottom: 12, fontSize: 12, color: '#5A5480' }}>{`${content.length}/1000`}</div>
+              </>
+            )}
+
+            {/* SPEAK MODE */}
+            {activeTab === 'speak' && (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
+                {/* Transcribed text preview */}
+                <div style={{ color: '#EEEAF8', fontFamily: "Lora, 'Lora', serif", fontSize: 16, lineHeight: '1.8', padding: '0 6px', textAlign: 'center' }}>{content || 'Your transcription will appear here'}</div>
+
+                {/* Language selector styled as specified */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <select
+                    value={selectedLanguage}
+                    onChange={e => setSelectedLanguage(e.target.value as SttLanguageCode)}
+                    style={{
+                      background: '#1C1836',
+                      border: '1px solid #2A2550',
+                      color: '#EEEAF8',
+                      padding: '8px 10px',
+                      borderRadius: 8,
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="ta-IN">தமிழ்</option>
+                    <option value="hi-IN">हिन्दी</option>
+                    <option value="en-IN">English</option>
+                  </select>
+                </div>
+
+                {/* Large mic button */}
+                <button
+                  onClick={() => !storyLocked && toggleRecording(selectedLanguage)}
+                  disabled={storyLocked || recordingState === 'processing'}
+                  aria-label={recordingState === 'recording' ? 'Stop recording' : 'Start recording'}
+                  style={{
+                    width: 72,
+                    height: 72,
+                    borderRadius: 9999,
+                    background: '#7C6FE8',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: 'none',
+                    cursor: storyLocked ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 0 32px rgba(124,111,232,0.5)',
+                    animation: recordingState === 'recording' ? 'pulse 1.6s ease-in-out infinite' : undefined,
+                  }}
+                >
+                  {recordingState === 'recording' ? (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="6" y="6" width="12" height="12" rx="2" fill="white" />
+                    </svg>
+                  ) : (
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" fill="white" />
+                      <path d="M19 11v1a7 7 0 0 1-14 0v-1" fill="white" />
+                    </svg>
+                  )}
+                </button>
+
+                <style>{`@keyframes pulse {0%,100% { box-shadow: 0 0 32px rgba(124,111,232,0.5);}50% { box-shadow: 0 0 48px rgba(124,111,232,0.8);} }`}</style>
+              </div>
+            )}
+
+            {/* QUICK NOTE MODE */}
+            {activeTab === 'quick' && (
+              <input
+                value={content}
+                onChange={(e) => { setContent(e.target.value); setIsDirty(true); if (!storyLocked) setSaveStatus('unsaved'); }}
+                placeholder="A quick note..."
+                readOnly={storyLocked}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: '#EEEAF8',
+                  fontFamily: "Lora, 'Lora', serif",
+                  fontSize: 16,
+                  lineHeight: '1.8',
+                  width: '100%',
+                  padding: '8px 0',
+                }}
+              />
+            )}
+
+          </div>
+
+          {/* MOOD SELECTOR */}
+          <div style={{ padding: '0 0 16px', marginBottom: 16 }}>
+            <div style={{ fontFamily: 'var(--font-dm-sans)', fontSize: 14, color: '#9B93C4', marginBottom: 8 }}>Add a Mood</div>
+            <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+              {[
+                { emoji: '😊', label: 'Happy' },
+                { emoji: '🙏', label: 'Grateful' },
+                { emoji: '🌿', label: 'Calm' },
+                { emoji: '💜', label: 'Loved' },
+                { emoji: '😔', label: 'Sad' },
+              ].map((m) => {
+                const selected = m.label === selectedMood;
+                return (
+                  <button key={m.label} onClick={() => setSelectedMood(selected ? '' : m.label)} style={{
+                    padding: '8px 14px', borderRadius: 9999, whiteSpace: 'nowrap', border: `1px solid ${selected ? '#7C6FE8' : '#2A2550'}`, background: selected ? 'rgba(124,111,232,0.15)' : '#1C1836', color: selected ? '#EEEAF8' : '#9B93C4', fontFamily: 'var(--font-dm-sans)', fontSize: 13
+                  }}>{`${m.emoji} ${m.label}`}</button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SAVE BUTTON area */}
+          <div style={{ padding: '0 20px 24px' }}>
             <button
-              onClick={() => !storyLocked && toggleRecording(selectedLanguage)}
-              disabled={storyLocked || recordingState === 'processing'}
-              aria-label={recordingState === 'recording' ? 'Stop recording' : 'Start recording'}
+              onClick={saveEntry}
+              disabled={storyLocked || !content.trim() || saveStatus === 'saving'}
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                background: recordingState === 'recording' ? '#DC2626' : recordingState === 'processing' ? '#e0d5c0' : '#C8860A',
-                display: 'inline-flex',
+                width: '100%',
+                background: '#7C6FE8',
+                color: 'white',
+                borderRadius: 9999,
+                padding: 16,
+                fontFamily: 'var(--font-dm-sans)',
+                fontSize: 16,
+                fontWeight: 600,
+                border: 'none',
+                display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: 'none',
-                cursor: storyLocked || recordingState === 'processing' ? 'not-allowed' : 'pointer',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
-                opacity: storyLocked ? 0.5 : 1,
+                gap: 8,
+                opacity: storyLocked || !content.trim() ? 0.4 : 1,
+                cursor: storyLocked || !content.trim() ? 'not-allowed' : 'pointer',
               }}
             >
-              {recordingState === 'recording' ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="6" y="6" width="12" height="12" rx="2" />
-                </svg>
+              {saveStatus === 'saving' ? (
+                <span style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.6)', borderTopColor: 'white', borderRadius: '50%', animation: 'kathaSpin 0.8s linear infinite' }} />
               ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 1a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                  <path d="M19 11v1a7 7 0 0 1-14 0v-1" />
-                </svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l2 4 4 .5-3 2 1 4-3-2-3 2 1-4-3-2L10 6 12 2z" fill="white"/></svg>
               )}
+              <span>Save Moment</span>
             </button>
           </div>
         </div>
-      </div>
       </main>
+
+      <style>{`@keyframes kathaSpin { to { transform: rotate(360deg); } }`}</style>
     </>
   );
 }

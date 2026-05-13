@@ -4,7 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { authService } from '@/services/authService';
-import { BookOpen } from 'lucide-react';
+import {
+  AlertCircle,
+  Check,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Sparkles,
+  User,
+} from 'lucide-react';
 import Link from 'next/link';
 
 // Password strength helper
@@ -16,50 +25,6 @@ const getPasswordStrength = (pwd: string): number => {
   if (/[^A-Za-z0-9]/.test(pwd)) score++;
   return score;
 };
-
-// Hardcoded SSR-safe positions for background words
-const backgroundWords = [
-  { word: 'வாழ்க்கை', x: '5%', y: '10%', size: '24px', opacity: 0.05, rot: '-12deg' },
-  { word: 'memories', x: '82%', y: '12%', size: '28px', opacity: 0.08, rot: '15deg' },
-  { word: 'ज़िन्दगी', x: '15%', y: '25%', size: '20px', opacity: 0.04, rot: '8deg' },
-  { word: 'കഥ', x: '75%', y: '35%', size: '22px', opacity: 0.07, rot: '-20deg' },
-  { word: 'కథ', x: '8%', y: '45%', size: '26px', opacity: 0.09, rot: '22deg' },
-  { word: 'গল্প', x: '88%', y: '55%', size: '18px', opacity: 0.06, rot: '-5deg' },
-  { word: 'love', x: '20%', y: '65%', size: '15px', opacity: 0.05, rot: '10deg' },
-  { word: 'ನೆನಪುಗಳು', x: '70%', y: '75%', size: '21px', opacity: 0.08, rot: '-18deg' },
-  { word: 'ഇന്നലെ', x: '12%', y: '85%', size: '19px', opacity: 0.04, rot: '5deg' },
-  { story: 'story', x: '85%', y: '90%', size: '27px', opacity: 0.09, rot: '-15deg' },
-  { word: 'நேற்று', x: '35%', y: '8%', size: '16px', opacity: 0.06, rot: '25deg' },
-  { word: 'യാദें', x: '55%', y: '18%', size: '23px', opacity: 0.07, rot: '-8deg' },
-  { word: 'life', x: '45%', y: '30%', size: '25px', opacity: 0.05, rot: '12deg' },
-  { word: 'පීරිති', x: '65%', y: '42%', size: '14px', opacity: 0.08, rot: '-22deg' },
-  { word: 'ഇന്ന്', x: '30%', y: '52%', size: '20px', opacity: 0.04, rot: '18deg' },
-  { word: 'আজ', x: '50%', y: '68%', size: '22px', opacity: 0.09, rot: '-10deg' },
-  { word: 'yesterday', x: '40%', y: '82%', size: '17px', opacity: 0.05, rot: '20deg' },
-  { word: 'కథ', x: '60%', y: '92%', size: '26px', opacity: 0.07, rot: '-25deg' },
-  { word: 'அன்பு', x: '25%', y: '15%', size: '18px', opacity: 0.06, rot: '14deg' },
-  { word: 'प्यार', x: '68%', y: '28%', size: '24px', opacity: 0.08, rot: '-16deg' },
-  { word: 'moments', x: '38%', y: '40%', size: '15px', opacity: 0.04, rot: '24deg' },
-  { word: 'ജീവിതം', x: '58%', y: '58%', size: '27px', opacity: 0.09, rot: '-6deg' },
-  { word: 'ಸ್ಮೃತಿ', x: '22%', y: '72%', size: '19px', opacity: 0.05, rot: '11deg' },
-  { word: 'ভালোবাসা', x: '78%', y: '80%', size: '21px', opacity: 0.07, rot: '-19deg' },
-  { word: 'இன்று', x: '48%', y: '95%', size: '13px', opacity: 0.06, rot: '21deg' },
-  { word: 'జ్ఞాపకాలు', x: '92%', y: '22%', size: '25px', opacity: 0.08, rot: '-14deg' },
-  { word: 'कहानी', x: '18%', y: '32%', size: '16px', opacity: 0.04, rot: '9deg' },
-  { word: 'ഓർമ്മകൾ', x: '82%', y: '48%', size: '23px', opacity: 0.09, rot: '-23deg' },
-  { word: 'ಜೀವನ', x: '15%', y: '60%', size: '28px', opacity: 0.05, rot: '17deg' },
-  { word: 'জীবন', x: '88%', y: '70%', size: '20px', opacity: 0.07, rot: '-7deg' },
-  { word: 'today', x: '28%', y: '88%', size: '14px', opacity: 0.06, rot: '22deg' },
-  { word: 'நேற்று', x: '72%', y: '96%', size: '22px', opacity: 0.08, rot: '-13deg' },
-  { word: 'ప్రేమ', x: '10%', y: '18%', size: '26px', opacity: 0.04, rot: '16deg' },
-  { word: 'कल', x: '90%', y: '30%', size: '17px', opacity: 0.09, rot: '-24deg' },
-  { word: 'സ്നേഹം', x: '12%', y: '50%', size: '24px', opacity: 0.05, rot: '11deg' },
-  { word: 'ನಿನ್ನೆ', x: '95%', y: '65%', size: '19px', opacity: 0.07, rot: '-17deg' },
-  { word: 'গতকাল', x: '8%', y: '78%', size: '21px', opacity: 0.06, rot: '23deg' },
-  { word: 'life', x: '94%', y: '85%', size: '15px', opacity: 0.08, rot: '-9deg' },
-  { word: 'கதை', x: '32%', y: '22%', size: '27px', opacity: 0.04, rot: '19deg' },
-  { word: 'నేడు', x: '62%', y: '12%', size: '20px', opacity: 0.09, rot: '-21deg' },
-];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -155,277 +120,649 @@ export default function LoginPage() {
   if (isLoading || isAuthenticated) return null;
 
   const currentScore = getPasswordStrength(signupPassword);
-
-  // Helpers for Password Strength Meter
-  let strengthText = '';
-  let strengthColor = '';
-  if (currentScore === 0) { strengthText = 'Weak'; strengthColor = '#E8DDD0'; }
-  else if (currentScore === 1) { strengthText = 'Weak'; strengthColor = '#C0392B'; }
-  else if (currentScore === 2) { strengthText = 'Fair'; strengthColor = '#E67E22'; }
-  else if (currentScore === 3) { strengthText = 'Good'; strengthColor = '#F1C40F'; }
-  else if (currentScore === 4) { strengthText = 'Strong'; strengthColor = '#2D6A4F'; }
+  const hasMissingFieldsError = error === 'Please fill in all fields';
+  const hasPasswordStrengthError = error.toLowerCase().includes('password must');
+  const hasPasswordMatchError = error.toLowerCase().includes('passwords do not match');
+  const hasAccountError = Boolean(error) && !hasMissingFieldsError && !hasPasswordStrengthError && !hasPasswordMatchError;
 
   return (
-    <div className="auth-page" style={{ background: 'transparent' }}>
-      
-      {/* Blurred Diary Words Effect Layer */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        {backgroundWords.map((item, idx) => (
-          <span
-            key={idx}
-            style={{
-              position: 'absolute',
-              left: item.x,
-              top: item.y,
-              fontSize: item.size,
-              color: '#5C3D2E',
-              opacity: item.opacity,
-              fontFamily: 'Georgia, serif',
-              transform: `rotate(${item.rot})`,
-              whiteSpace: 'nowrap',
-              userSelect: 'none'
-            }}
+    <main className="katha-auth-page">
+      <div className="katha-auth-shell">
+        <section className="katha-hero" aria-label="KathaLife writing illustration">
+          <span className="sparkle sparkle-one">✦</span>
+          <span className="sparkle sparkle-two">✦</span>
+          <span className="sparkle sparkle-three">✦</span>
+          <span className="sparkle sparkle-four">✦</span>
+          <svg
+            className="hero-illustration"
+            viewBox="0 0 320 240"
+            fill="none"
+            role="img"
+            aria-label="Woman sitting cross-legged writing in a journal"
           >
-            {item.word || item.story}
-          </span>
-        ))}
-      </div>
+            <ellipse cx="160" cy="215" rx="94" ry="13" fill="rgba(124,111,232,0.18)" />
+            <circle cx="159" cy="69" r="25" fill="#A89CF5" />
+            <path d="M130 58c8-25 45-31 62-6 9 13 7 30-3 44-9-9-18-14-33-14-16 0-27 6-37 17-7-13-10-27-5-41Z" fill="#3D3580" />
+            <path d="M118 104c14-20 68-22 83 0 10 15 6 52-2 77h-78c-10-25-15-61-3-77Z" fill="#5B4FD4" />
+            <path d="M117 126c-19 7-34 20-47 39" stroke="#A89CF5" strokeWidth="15" strokeLinecap="round" />
+            <path d="M204 128c21 8 36 20 48 38" stroke="#A89CF5" strokeWidth="15" strokeLinecap="round" />
+            <path d="M94 181c28-3 47-1 66 15" stroke="#7C6FE8" strokeWidth="18" strokeLinecap="round" />
+            <path d="M226 181c-27-3-47-1-66 15" stroke="#7C6FE8" strokeWidth="18" strokeLinecap="round" />
+            <rect x="113" y="145" width="94" height="56" rx="8" fill="#EEEAF8" />
+            <path d="M160 145v56" stroke="#9B93C4" strokeWidth="2" />
+            <path d="M128 161h22M128 174h18M172 161h24M172 174h18" stroke="#5A5480" strokeWidth="3" strokeLinecap="round" />
+            <path d="M209 151l18-12" stroke="#4DC8C8" strokeWidth="5" strokeLinecap="round" />
+          </svg>
+        </section>
 
-      {/* Auth Card Foreground */}
-      <div className="auth-card" style={{ position: 'relative', zIndex: 1 }}>
-        
-        {/* Card Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
-          <BookOpen size={22} color="var(--accent)" />
-          <span style={{ fontSize: '22px', fontWeight: 800, color: 'var(--primary)', letterSpacing: '-0.02em' }}>
-            KathaLife
-          </span>
-        </div>
-        <div style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', marginTop: '4px', marginBottom: '28px' }}>
-          Your Life, As a Story
-        </div>
+        <section className="katha-form-card">
+          <header className="katha-heading">
+            <h1>
+              {activeTab === 'signup' ? 'Create your' : 'Welcome back to'}{' '}
+              <span>KathaLife</span>
+            </h1>
+            <p>
+              {activeTab === 'signup'
+                ? 'Start your journey of capturing moments and discovering your story.'
+                : 'Return to your moments, memories, and story.'}
+            </p>
+          </header>
 
-        {/* Tab Switcher */}
-        <div style={{ display: 'flex', background: 'var(--bg-subtle)', borderRadius: '10px', padding: '4px', marginBottom: '28px', gap: '4px' }}>
-          <button 
-            onClick={() => handleTabSwitch('login')}
-            style={{
-              flex: 1, padding: '9px 0', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
-              background: activeTab === 'login' ? 'white' : 'transparent',
-              color: activeTab === 'login' ? 'var(--primary)' : 'var(--text-muted)',
-              boxShadow: activeTab === 'login' ? '0 1px 4px rgba(26,18,8,0.10)' : 'none'
-            }}
-          >
-            Login
-          </button>
-          <button 
-            onClick={() => handleTabSwitch('signup')}
-            style={{
-              flex: 1, padding: '9px 0', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
-              background: activeTab === 'signup' ? 'white' : 'transparent',
-              color: activeTab === 'signup' ? 'var(--primary)' : 'var(--text-muted)',
-              boxShadow: activeTab === 'signup' ? '0 1px 4px rgba(26,18,8,0.10)' : 'none'
-            }}
-          >
-            Sign Up
-          </button>
-        </div>
+          <div className="social-row" aria-label="Social authentication options">
+            <button type="button" className="social-button">
+              <span className="google-mark">G</span>
+              <span>Google</span>
+            </button>
+            <button type="button" className="social-button">
+              <span className="apple-mark">●</span>
+              <span>Apple</span>
+            </button>
+            <button type="button" className="social-button">
+              <Mail size={16} />
+              <span>Email</span>
+            </button>
+          </div>
 
-        {error && <div className="error-message">{error}</div>}
+          <div className="email-divider">
+            <span>{activeTab === 'signup' ? 'or sign up with email' : 'or sign in with email'}</span>
+          </div>
 
-        {/* -------- LOGIN VIEW -------- */}
-        {activeTab === 'login' && (
-          <div>
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input
-                type="email"
-                className="input"
-                placeholder="you@example.com"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-              />
+          {hasAccountError && (
+            <div className="auth-error-banner">
+              <AlertCircle size={15} />
+              <span>{error}</span>
             </div>
+          )}
 
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type={showLoginPassword ? 'text' : 'password'}
-                  className="input"
-                  placeholder="Enter your password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowLoginPassword((s) => !s)}
-                  aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
-                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
-                >
-                  {showLoginPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3-11-7 1.03-2.24 2.79-4.07 4.9-5.16" />
-                      <path d="M1 1l22 22" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
-                </button>
+          {activeTab === 'login' && (
+            <div className="auth-form">
+              <div className="auth-field">
+                <div className={`input-wrap ${hasMissingFieldsError && !loginEmail ? 'has-error' : ''}`}>
+                  <Mail size={18} className="field-icon" />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                  />
+                </div>
+                {hasMissingFieldsError && !loginEmail && (
+                  <p className="field-error"><AlertCircle size={13} /> Email is required</p>
+                )}
               </div>
-              <div style={{ textAlign: 'right', marginTop: '4px' }}>
-                <Link href="/forgot-password" style={{ fontSize: '13px', color: 'var(--accent)', textDecoration: 'none' }}>
+
+              <div className="auth-field">
+                <div className={`input-wrap ${hasMissingFieldsError && !loginPassword ? 'has-error' : ''}`}>
+                  <Lock size={18} className="field-icon" />
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowLoginPassword((s) => !s)}
+                    aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {hasMissingFieldsError && !loginPassword && (
+                  <p className="field-error"><AlertCircle size={13} /> Password is required</p>
+                )}
+                <Link href="/forgot-password" className="forgot-link" style={{ color: '#EEEAF8' }}>
                   Forgot password?
                 </Link>
               </div>
-            </div>
 
-            <button
-              onClick={handleLogin}
-              className="btn-primary"
-              style={{ width: '100%', marginTop: '8px', padding: '13px', fontSize: '15px' }}
-              disabled={loading}
-            >
-              {loading ? <span className="spinner" /> : 'Login →'}
-            </button>
+              <button
+                type="button"
+                onClick={handleLogin}
+                className="primary-cta"
+                disabled={loading}
+              >
+                {loading ? <span className="spinner" /> : <span>Sign In</span>}
+                {!loading && <Sparkles size={18} />}
+              </button>
 
-            <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'var(--text-secondary)' }}>
-              New to KathaLife?{' '}
-              <span onClick={() => handleTabSwitch('signup')} className="form-link" style={{ cursor: 'pointer' }}>
-                Sign up
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* -------- SIGNUP VIEW -------- */}
-        {activeTab === 'signup' && (
-          <div>
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input
-                type="email"
-                className="input"
-                placeholder="you@example.com"
-                value={signupEmail}
-                onChange={(e) => setSignupEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type={showSignupPassword ? 'text' : 'password'}
-                  className="input"
-                  placeholder="Create a strong password"
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowSignupPassword((s) => !s)}
-                  aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
-                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
-                >
-                  {showSignupPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3-11-7 1.03-2.24 2.79-4.07 4.9-5.16" />
-                      <path d="M1 1l22 22" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
+              <p className="bottom-switch">
+                Don&apos;t have an account?{' '}
+                <button type="button" onClick={() => handleTabSwitch('signup')}>
+                  Create one
                 </button>
-              </div>
-
-              {/* Password Strength Meter */}
-              <div>
-                <div style={{ display: 'flex', gap: '4px', marginTop: '8px' }}>
-                  {[1, 2, 3, 4].map((level) => {
-                    let bgColor = '#E8DDD0'; // score 0 base
-                    if (currentScore > 0 && level <= currentScore) {
-                      if (currentScore === 1) bgColor = '#C0392B';
-                      else if (currentScore === 2) bgColor = '#E67E22';
-                      else if (currentScore === 3) bgColor = '#F1C40F';
-                      else if (currentScore >= 4) bgColor = '#2D6A4F';
-                    }
-                    return (
-                      <div 
-                        key={level} 
-                        style={{ height: '3px', flex: 1, borderRadius: '2px', backgroundColor: bgColor, transition: 'background-color 0.3s ease' }} 
-                      />
-                    );
-                  })}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
-                  <span style={{ fontSize: '11px', color: strengthColor }}>{strengthText}</span>
-                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>8+ chars, uppercase, number, symbol</span>
-                </div>
-              </div>
+              </p>
             </div>
+          )}
 
-            <div className="form-group">
-              <label className="form-label">Confirm Password</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  className="input"
-                  placeholder="Repeat your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword((s) => !s)}
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                  style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', padding: 6, cursor: 'pointer' }}
-                >
-                  {showConfirmPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3-11-7 1.03-2.24 2.79-4.07 4.9-5.16" />
-                      <path d="M1 1l22 22" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C3D2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  )}
+          {activeTab === 'signup' && (
+            <div className="auth-form">
+              <div className="auth-field">
+                <div className="input-wrap">
+                  <User size={18} className="field-icon" />
+                  <input
+                    type="text"
+                    name="fullName"
+                    autoComplete="name"
+                    placeholder="Full name"
+                  />
+                </div>
+              </div>
+
+              <div className="auth-field">
+                <div className={`input-wrap ${hasMissingFieldsError && !signupEmail ? 'has-error' : ''}`}>
+                  <Mail size={18} className="field-icon" />
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                  />
+                </div>
+                {hasMissingFieldsError && !signupEmail && (
+                  <p className="field-error"><AlertCircle size={13} /> Email is required</p>
+                )}
+              </div>
+
+              <div className="auth-field">
+                <div className={`input-wrap ${hasMissingFieldsError && !signupPassword ? 'has-error' : ''} ${hasPasswordStrengthError ? 'has-error' : ''}`}>
+                  <Lock size={18} className="field-icon" />
+                  <input
+                    type={showSignupPassword ? 'text' : 'password'}
+                    placeholder="Password"
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowSignupPassword((s) => !s)}
+                    aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showSignupPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <p className={`password-hint ${currentScore > 0 ? 'is-active' : ''}`}>
+                  <Check size={13} /> At least 8 characters
+                </p>
+                {(hasMissingFieldsError && !signupPassword) || hasPasswordStrengthError ? (
+                  <p className="field-error">
+                    <AlertCircle size={13} />
+                    {hasPasswordStrengthError ? error : 'Password is required'}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="auth-field">
+                <div className={`input-wrap ${hasMissingFieldsError && !confirmPassword ? 'has-error' : ''} ${hasPasswordMatchError ? 'has-error' : ''}`}>
+                  <Lock size={18} className="field-icon" />
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowConfirmPassword((s) => !s)}
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {hasMissingFieldsError && !confirmPassword && (
+                  <p className="field-error"><AlertCircle size={13} /> Confirm your password</p>
+                )}
+                {hasPasswordMatchError && (
+                  <p className="field-error"><AlertCircle size={13} /> {error}</p>
+                )}
+                {confirmPassword.length > 0 && !hasPasswordMatchError && (
+                  <p className={signupPassword === confirmPassword ? 'match-note is-match' : 'match-note is-error'}>
+                    {signupPassword === confirmPassword ? 'Passwords match' : 'Passwords do not match'}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSignup}
+                className="primary-cta"
+                disabled={loading}
+              >
+                {loading ? <span className="spinner" /> : <span>Create Account</span>}
+                {!loading && <Sparkles size={18} />}
+              </button>
+
+              <p className="legal-copy">
+                By signing up, you agree to our{' '}
+                <Link href="/terms">Terms of Service</Link> and{' '}
+                <Link href="/privacy">Privacy Policy</Link>.
+              </p>
+
+              <p className="bottom-switch">
+                Already have an account?{' '}
+                <button type="button" onClick={() => handleTabSwitch('login')}>
+                  Sign in
                 </button>
-              </div>
-              {confirmPassword.length > 0 && (
-                <div style={{ fontSize: '12px', marginTop: '4px', color: signupPassword === confirmPassword ? 'var(--success)' : 'var(--error)' }}>
-                  {signupPassword === confirmPassword ? '✓ Passwords match' : '✗ Passwords don\'t match'}
-                </div>
-              )}
+              </p>
             </div>
-
-            <button
-              onClick={handleSignup}
-              className="btn-primary"
-              style={{ width: '100%', marginTop: '16px', padding: '13px', fontSize: '15px' }}
-              disabled={loading}
-            >
-              {loading ? <span className="spinner" /> : 'Create Account →'}
-            </button>
-
-            <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: 'var(--text-secondary)' }}>
-              Already have an account?{' '}
-              <span onClick={() => handleTabSwitch('login')} className="form-link" style={{ cursor: 'pointer' }}>
-                Login
-              </span>
-            </div>
-          </div>
-        )}
-
+          )}
+        </section>
       </div>
-    </div>
+
+      <style jsx>{`
+        .katha-auth-page {
+          height: 100svh;
+          background: #0D0B1A;
+          display: flex;
+          justify-content: center;
+          font-family: var(--font-body);
+          overflow: hidden;
+        }
+
+        .katha-auth-shell {
+          width: 100%;
+          max-width: 480px;
+          height: 100svh;
+          background: #0D0B1A;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        .katha-hero {
+          position: relative;
+          flex: 0 0 clamp(122px, 28svh, 190px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          background: radial-gradient(circle at center, #1C1836 0%, #0D0B1A 72%);
+        }
+
+        .sparkle {
+          position: absolute;
+          font-size: 20px;
+          line-height: 1;
+          opacity: 0.9;
+        }
+
+        .sparkle-one { top: 20%; left: 13%; color: #7C6FE8; }
+        .sparkle-two { top: 16%; right: 19%; color: #4DC8C8; font-size: 16px; }
+        .sparkle-three { bottom: 22%; left: 21%; color: #4DC8C8; font-size: 14px; }
+        .sparkle-four { bottom: 29%; right: 12%; color: #7C6FE8; font-size: 22px; }
+
+        .hero-illustration {
+          width: min(70%, 300px);
+          max-height: 24svh;
+          filter: drop-shadow(0 24px 36px rgba(0,0,0,0.38));
+        }
+
+        .katha-form-card {
+          flex: 1;
+          min-height: 0;
+          background: #13102A;
+          border-radius: 24px 24px 0 0;
+          box-shadow: 0 -8px 32px rgba(0,0,0,0.5);
+          padding: 26px 24px calc(22px + env(safe-area-inset-bottom));
+          overflow: hidden;
+        }
+
+        .katha-heading h1 {
+          margin: 0;
+          color: #EEEAF8;
+          font-family: var(--font-body);
+          font-size: 28px;
+          font-weight: 700;
+          line-height: 1.12;
+          letter-spacing: 0;
+        }
+
+        .katha-heading h1 span {
+          color: #EEEAF8;
+          font-family: var(--font-display);
+          font-size: 32px;
+          font-style: italic;
+          font-weight: 600;
+        }
+
+        .katha-heading p {
+          margin: 10px 0 24px;
+          color: #9B93C4;
+          font-size: 14px;
+          line-height: 1.55;
+        }
+
+        .social-row {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .social-button {
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px 8px;
+          border: 1px solid #2A2550;
+          border-radius: 12px;
+          background: #1C1836;
+          color: #EEEAF8;
+          font-family: var(--font-body);
+          font-size: 14px;
+          cursor: pointer;
+        }
+
+        .google-mark,
+        .apple-mark {
+          width: 16px;
+          height: 16px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: #EEEAF8;
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .apple-mark {
+          color: #EEEAF8;
+          font-size: 10px;
+        }
+
+        .email-divider {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin: 22px 0 18px;
+          color: #5A5480;
+          font-size: 12px;
+        }
+
+        .email-divider::before,
+        .email-divider::after {
+          content: '';
+          height: 1px;
+          flex: 1;
+          background: #2A2550;
+        }
+
+        .auth-error-banner,
+        .field-error {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          color: #E86F8A;
+        }
+
+        .auth-error-banner {
+          margin-bottom: 14px;
+          padding: 10px 12px;
+          border: 1px solid rgba(232,111,138,0.28);
+          border-radius: 12px;
+          background: rgba(232,111,138,0.1);
+          font-size: 13px;
+        }
+
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .auth-field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .input-wrap {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-height: 52px;
+          padding: 0 14px;
+          border: 1px solid #2A2550;
+          border-radius: 12px;
+          background: #1C1836;
+          color: #9B93C4;
+          transition: border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+
+        .input-wrap:focus-within {
+          border-color: #7C6FE8;
+          box-shadow: 0 0 0 3px rgba(124,111,232,0.2);
+        }
+
+        .input-wrap.has-error {
+          border-color: #E86F8A;
+        }
+
+        .field-icon {
+          flex: none;
+          color: #9B93C4;
+        }
+
+        .input-wrap input {
+          width: 100%;
+          min-width: 0;
+          border: 0;
+          outline: 0;
+          background: transparent;
+          color: #EEEAF8;
+          font-family: var(--font-body);
+          font-size: 15px;
+        }
+
+        .input-wrap input::placeholder {
+          color: #5A5480;
+        }
+
+        .input-wrap input:-webkit-autofill,
+        .input-wrap input:-webkit-autofill:hover,
+        .input-wrap input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0 1000px #1C1836 inset;
+          -webkit-text-fill-color: #EEEAF8;
+          caret-color: #EEEAF8;
+          transition: background-color 9999s ease-out;
+        }
+
+        .password-toggle {
+          flex: none;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 34px;
+          height: 34px;
+          border: 0;
+          border-radius: 9999px;
+          background: transparent;
+          color: #9B93C4;
+          cursor: pointer;
+        }
+
+        .field-error {
+          margin: 0;
+          font-size: 12px;
+          line-height: 1.35;
+        }
+
+        .password-hint,
+        .match-note {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin: 0;
+          color: #5A5480;
+          font-size: 12px;
+        }
+
+        .password-hint.is-active,
+        .match-note.is-match {
+          color: #5EC87A;
+        }
+
+        .match-note.is-error {
+          color: #E86F8A;
+        }
+
+        .forgot-link {
+          align-self: flex-end;
+          color: #EEEAF8 !important;
+          font-size: 13px;
+          font-weight: 700;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
+
+        .forgot-link:visited,
+        .forgot-link:hover,
+        .forgot-link:active {
+          color: #EEEAF8 !important;
+        }
+
+        .primary-cta {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: 100%;
+          min-height: 56px;
+          margin-top: 4px;
+          border: 0;
+          border-radius: 9999px;
+          background: #7C6FE8;
+          color: #FFFFFF;
+          font-family: var(--font-body);
+          font-size: 16px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: background 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+        }
+
+        .primary-cta:hover:not(:disabled) {
+          background: #5B4FD4;
+          transform: translateY(-1px);
+        }
+
+        .primary-cta:disabled {
+          cursor: not-allowed;
+          opacity: 0.72;
+        }
+
+        .legal-copy,
+        .bottom-switch {
+          margin: 4px 0 0;
+          color: #5A5480;
+          text-align: center;
+          font-size: 12px;
+          line-height: 1.55;
+        }
+
+        .legal-copy a {
+          color: #EEEAF8;
+          text-decoration: none;
+        }
+
+        .bottom-switch {
+          margin-top: 6px;
+          color: #9B93C4;
+          font-size: 14px;
+        }
+
+        .bottom-switch button {
+          border: 0;
+          background: transparent;
+          color: #EEEAF8;
+          font-family: var(--font-body);
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 0;
+        }
+
+        @media (min-width: 481px) {
+          .katha-auth-page {
+            align-items: center;
+            padding: 32px;
+          }
+
+          .katha-auth-shell {
+            height: min(860px, calc(100svh - 64px));
+            border: 1px solid #2A2550;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+          }
+        }
+
+        @media (max-height: 700px) {
+          .katha-hero {
+            flex-basis: 116px;
+          }
+
+          .hero-illustration {
+            width: min(62%, 260px);
+            max-height: 105px;
+          }
+
+          .katha-form-card {
+            padding: 22px 20px calc(18px + env(safe-area-inset-bottom));
+          }
+
+          .katha-heading h1 {
+            font-size: 25px;
+          }
+
+          .katha-heading h1 span {
+            font-size: 29px;
+          }
+
+          .katha-heading p {
+            margin-bottom: 18px;
+          }
+
+          .email-divider {
+            margin: 18px 0 14px;
+          }
+
+          .auth-form {
+            gap: 10px;
+          }
+
+          .input-wrap {
+            min-height: 48px;
+          }
+
+          .primary-cta {
+            min-height: 52px;
+          }
+        }
+      `}</style>
+    </main>
   );
 }
